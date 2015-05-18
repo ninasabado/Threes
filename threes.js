@@ -48,7 +48,7 @@ function Table(ex, why, percentFilled){
  * Function creates a new Square each time, with value 1 or 2
  * Randomly generates a number from 1-100, success if less than this.per */
 Table.prototype.newSq = function(){
-	if(Math.floor(Math.random()*100) < this.per)
+	if(Math.floor(Math.random()*100) <= this.per)
 		return new Square(Math.floor(Math.random()*2)+1);
 	else
 		return new Square(0);
@@ -72,6 +72,9 @@ Table.prototype.print = function(){
 		}
 		string += "\n";
 	}
+
+	console.log("MOVES: " + moves);
+	console.log("SCORE: " + score);
 	console.log(string);
 }
 
@@ -109,9 +112,8 @@ Table.prototype.hShift = function(first, last, left){
    given first square to given last square up or down */
 Table.prototype.vShift = function(first, last, up){
 	if(up){
-		for(var j = first; j < last; j+=this.col){
+		for(var j = first; j < last; j+=this.col)
 			this.grid[j] = this.grid[j+this.col];
-		}
 	}
 	else{
 		for(var j = last; j != first; j-=this.col)
@@ -125,6 +127,7 @@ Table.prototype.vShift = function(first, last, up){
  * If leftmost two squares are mergeable, merges then shifts
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
 Table.prototype.left = function(){
+	moves++;
 	
 	// Checks the leftmost squares
 	for(var i = 0; i < this.grid.length; i+=this.col){
@@ -134,22 +137,20 @@ Table.prototype.left = function(){
 
 		// Check 1: Leftmost square is 0
 		if(this.grid[first].val == 0){
-			console.log("Leftmost is 0");
 			this.hShift(first, last, bool);
-			this.grid[last] = new Square(100);
+			this.grid[last] = this.newSq();
 		}
 
 		// Check 2: Leftmost square is NOT 0, but ends are mergeable
 		else if(i+1 != this.grid.length 
 			&& check(this.grid[first], this.grid[first+1])){
-			console.log("Leftmost is mergeable");
-			this.grid[first].val += this.grid[first+1].val;
+			score += (this.grid[first].val += this.grid[first+1].val);
 			this.hShift(first+1, last, bool);
-			this.grid[last] = new Square(100);
+			this.grid[last] = this.newSq();
 		}
 	}
 
-	console.log("Move LEFT:");
+	console.log("\nYou moved LEFT:");
 	this.print();
 }
 
@@ -158,6 +159,7 @@ Table.prototype.left = function(){
  * If rightmost two squares are mergeable, merges then shifts
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.right = function(){
+ 	moves++;
 	
 	// Checks the rightmost squares
 	for(var i = this.col-1; i < this.grid.length; i+=this.col){
@@ -167,22 +169,20 @@ Table.prototype.left = function(){
 
 		// Check 1: Rightmost square is 0
 		if(this.grid[last].val == 0){
-			console.log("Rightmost is 0");
 			this.hShift(first, last, bool);
-			this.grid[first] = new Square(100);
+			this.grid[first] = this.newSq();
 		}
 
 		// Check 2: Rightmost square is NOT 0 but ends are mergeable
 		else if(i != this.grid.length 
 			&& check(this.grid[last], this.grid[last-1])){
-			console.log("Rightmost is mergeable");
-			this.grid[last].val += this.grid[last-1].val;
+			score += (this.grid[last].val += this.grid[last-1].val);
 			this.hShift(first, last-1, bool);
-			this.grid[first] = new Square(100);
+			this.grid[first] = this.newSq();
 		}
 	}
 
-	console.log("Move RIGHT:");
+	console.log("\nYou moved RIGHT:");
 	this.print();
 }
 
@@ -191,6 +191,7 @@ Table.prototype.left = function(){
  * If topmost two squares are mergeable, merges then shifts
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.up = function(){
+ 	moves++;
 
  	// Checks the topmost squares
  	for(var i = 0; i < this.col; i++){
@@ -198,25 +199,21 @@ Table.prototype.left = function(){
 		var last  = i+(this.col*(this.row-1));		// Index of last in column
 		var bool  = true;
 
-		console.log("Checking square " + i);
-
  		// Check 1: Topmost square is 0
  		if(this.grid[first].val == 0){
- 			console.log("Topmost is 0");
  			this.vShift(first, last, bool);
- 			this.grid[last] = new Square(100);
+ 			this.grid[last] = this.newSq();
   		}
 
  		// Check 2: Topmost square is NOT 0 but tops are mergeable
  		if(check(this.grid[first], this.grid[first+this.col])){
-  			console.log("Topmost is mergeable");
- 			this.grid[first].val += this.grid[first+this.col].val;
+ 			score += (this.grid[first].val += this.grid[first+this.col].val);
  			this.vShift(first+this.col, last, bool);
- 			this.grid[last] = new Square(100);
+ 			this.grid[last] = this.newSq();
  		}
  	}
 
- 	console.log("Move UP:");
+ 	console.log("\nYou moved UP:");
  	this.print();
  }
 
@@ -225,6 +222,7 @@ Table.prototype.left = function(){
  * If bottommost two squares are mergeable, merges then shifts
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.down = function(){
+ 	moves++;
 
  	// Checks the topmost squares
  	for(var i = 0; i < this.col; i++){
@@ -232,38 +230,119 @@ Table.prototype.left = function(){
 		var last  = i+(this.col*(this.row-1));		// Index of last in column
 		var bool  = false;
 
-		console.log("Checking square " + i);
-
  		// Check 1: Bottommost square is 0
  		if(this.grid[last].val == 0){
- 			console.log("Bottommost is 0");
  			this.vShift(first, last, bool);
- 			this.grid[first] = new Square(100);
+ 			this.grid[first] = this.newSq();
   		}
 
  		// Check 2: Bottommost square is NOT 0 but bottoms are mergeable
  		if(check(this.grid[last], this.grid[last-this.col])){
-  			console.log("Bottommost is mergeable");
- 			this.grid[last].val += this.grid[last-this.col].val;
+ 			score += (this.grid[last].val += this.grid[last-this.col].val);
  			this.vShift(first, last-this.col, bool);
- 			this.grid[first] = new Square(100);
+ 			this.grid[first] = this.newSq();
  		}
  	}
 
- 	console.log("Move DOWN:");
+ 	console.log("\nYou moved DOWN:");
  	this.print();
  }
 
 /* Takes in user's variables */
-var user_x = 	+process.argv[2];
-var user_y = 	+process.argv[3];
-var user_perc = +process.argv[4];
+var i;
+// Just in case Node.js isn't used
+for(i = 0; i < +process.argv.length; i++){
+	if(+process.argv[i].indexOf("threes") > 1)
+		break;
+}
+var user_x = 	+process.argv[++i];
+var user_y = 	+process.argv[++i];
+var user_perc = +process.argv[++i];
 
-//console.log("When you take the arguments, you get x as " + user_x + " and y as " + user_y);
 
-thisTable = new Table(user_x, user_y, user_perc);
-thisTable.print();
-thisTable.left();
-thisTable.right();
-thisTable.up();
-thisTable.down();
+/* INTRO */
+game = new Table(user_x, user_y, user_perc);
+console.log("\nWelcome to THREES by Nina Sabado."
+	+ "\nIf you're not sure what to do, don't be afraid to ask for HELP!\n");
+game.print();
+
+/* HELP */
+function halp(){
+	console.log("\nINSTRUCTIONS:"
+	+ "\nCOMMAND\t\tACTION"
+	+ "\n* Configuration"
+	+ "\n  prob\t\tChange the probability of square being filled"
+	+ "\n  reset\t\tReset the game"
+	+ "\n  quit\t\tExit the game"
+	+ "\n* Movement"
+	+ "\n  left\t\tGo left"
+	+ "\n  right\t\tGo right"
+	+ "\n  up\t\tGo up"
+	+ "\n  down\t\tGo down");
+}
+
+/* STANDARD INPUT
+ * Code adapted from https://docs.nodejitsu.com/ */
+process.stdin.resume();
+  process.stdin.setEncoding("utf8");
+  var util = require("util");
+  var expectInt = false;
+
+  process.stdin.on("data", function (text) {
+    text = text.substring( 0, text.indexOf("\r\n"));	// Chops off \r\n
+    
+    // Ensures that a random typed integer wouldn't screw up the code
+    if(expectInt){
+    	var x = parseInt(text);
+    	if(!isNaN(text) && (x|0)==x)
+    		game.per = x;
+    	else
+    		console.log("That's not in the right format, sorry.")
+    	expectInt = false;
+    }
+
+    // Other commands
+    else{
+    	switch(text){
+    	case "HELP":
+    		halp();
+    		break;
+    	case "prob":
+    		console.log("\nWhat % would you like to change it to?");
+    		console.log("(Please input the integer only)");
+    		expectInt = true;
+    		break;
+    	case "reset":
+    		game = new Table(user_x, user_y, game.per);
+    		moves = score = 0;
+    		console.log("\nYou've reset the game.")
+    		game.print();
+    		break;
+    	case "quit":
+    		done();
+    		break;
+
+    	case "left":
+    		game.left();
+    		break;
+    	case "right":
+    		game.right();
+    		break;
+    	case "up":
+    		game.up();
+    		break;
+    	case "down":
+    		game.down();
+    		break;
+
+    	default:
+    		console.log("\nSorry, I don't recognize that command."
+    			+"\nIf you're confused, please type HELP for the instructions.");
+    	}
+    }
+  });
+
+  function done() {
+    console.log("\nThanks for playing THREES by Nina Sabado! Hope to see you again soon.");
+    process.exit();
+  }
