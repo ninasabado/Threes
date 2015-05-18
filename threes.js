@@ -6,91 +6,126 @@
 var score = 0;		// Total value of numbers combined
 var moves = 0;		// Total number of moves made
 
-/* Defines Square object */
-function Square(val){
-	this.value = val;
+/* SQUARE */
+
+/* SQUARE Object
+ * Defines Square object 
+ * Contains: value of square */
+function Square(v){
+	this.val = v;
 }
 
-/* Function creates a new Square each time */
-function newSq(){
-	return new Square(Math.floor(Math.random()*3));
-}
+/* TABLE */
 
-/* Function checks if moving off-grid is possible
- * Returns TRUE if possible, FALSE if not */
-function check(one){
-	if(one.value == 0)
-		return true;
-	else
-		return false;
-}
+/* TABLE Object
+ * Defines Table object */
+function Table(ex, why, percentFilled){
+	this.per = 0;
+	this.row = 0;
+	this.col = 0;
 
-/* Function checks if merging the squares is possible
- * Returns TRUE if possible, FALSE if not */
-function check(one, two){
-	if((one.value + two.value) == 3)
-		return true;
-	else if(((one.value + two.value)%3) == 0)
-		return true;
-	else
-		return false;
-}
-
-/* Defines Table object */
-/* TO DO FOR LATER:: ACCEPT AN ARGUMENT FOR THE PERCENTAGE OF
-TILES INITIALLY FILLED */
-function Table(ex, why){
-	this.chanceAppear = 50;
-	this.x = 0;
-	this.y = 0;
-
-	// If existing x AND y arguments
+	// If x and y values exist, protects against NaN
 	if(ex && why ){
-		this.x = ex;
-		this.y = why;
+		this.row = ex;
+		this.col = why;
 		this.grid = [];
 
 		// Pushes a new Square object for each grid in the table,
-		// instantiating a random number from 0-1
-		for(var i = 0; i < this.x*this.y; i++){
-			this.grid.push(newSq());
-			//console.log("Pushed new SQUARE [" + this.grid[i].value + "]");
+		// instantiating a random number from 0-2
+		for(var i = 0; i < this.row*this.col; i++){
+
+			if(this.per)
+				this.per = percentFilled;	// If percentFilled exists
+			else
+				this.per = 50;				// Else defaults to 50
+			
+			this.grid.push(this.newSq());
 		}
 	}
 }
 
-// Prints it in row x column format
+/* Table.NEWSQ Function
+ * Function creates a new Square each time, with value 1 or 2
+ * Randomly generates a number from 1-100, success if less than this.per */
+Table.prototype.newSq = function(){
+	if(Math.floor(Math.random()*100) < this.per)
+		return new Square(Math.floor(Math.random()*2)+1);
+	else
+		return new Square(0);
+}
+
+/* Table.PRINT Function
+ * Prints it in row x column format */
 Table.prototype.print = function(){
 	var indx = 0;
 	var string = "";
-	for(var j = 0; j < this.x; j++){
-		for(var i = 0; i < this.y; i++){
-			string += "[ " + this.grid[indx++].value + " ]";
+	for(var j = 0; j < this.row; j++){
+		for(var i = 0; i < this.col; i++){
+			string += "[ " + this.grid[indx++].val + " ]";
 		}
 		string += "\n";
 	}
 	console.log(string);
 }
 
-// Shifts all squares in grid to the left
+
+/* CHECK Function
+ * Function checks if merging the squares is possible
+ * Returns TRUE if possible, FALSE if not */
+function check(one, two){
+	if((one.val + two.val) == 3)
+		return true;
+	else if(one.val > 2 && two.val > 2 && one.val == two.val)
+		return true;
+	else
+		return false;
+}
+
+/* Table.HSHIFT Function 
+*/
+Table.prototype.hShift = function(start, last, left){
+	if(left){
+		for(var j = start; j < last; j++)
+			this.grid[j] = this.grid[j+1];
+	}
+	
+}
+
+/* Table.LEFT Function
+ * Shifts all squares in grid to the left - O(N) */
 Table.prototype.left = function(){
-	console.log("This.x is " + this.x);
-	var i = 0;
-	//for(var i = 0; i < this.grid.length; i++){
-	for(; i < this.grid.length; i+this.x){
-		console.log("This.x is " + this.x);
-		console.log("i is " + i);
-		// if(i%this.x == 0){
-		// }
+	// Checks the leftmost square
+	for(var i = 0; i < this.grid.length; i+=this.col){
+		
+		console.log("Checking Square " + i);
+
+		// Check 1: Leftmost square is 0
+		// Function shifts everything over to the left
+		if(this.grid[i].val == 0){
+			console.log("LEFTMOST SQUARE IS 0, MOVE ALL");
+			var last = i + this.col - 1;	// Index of last in row
+			this.hShift(i, last, true);
+			this.grid[last] = new Square(100);
+			this.print();
+		}
+
+		// Check 2: Leftmost square is NOT 0
+		// Keeps checking the two squares to see if mergeable
+		// If non-mergeable, checks the next two until mergeable is
+		// found or not moved
+		else if(i+1 != this.grid.length && check(this.grid[i], this.grid[i+1])){
+			console.log("The two leftmost squares are mergeable");
+		}
 	}
 }
 
 /* Takes in user's variables */
 var user_x = +process.argv[2];
 var user_y = +process.argv[3];
+var user_perc = +process.argv[4];
 
 //console.log("When you take the arguments, you get x as " + user_x + " and y as " + user_y);
 
-thisTable = new Table(user_x, user_y);
+thisTable = new Table(user_x, user_y, user_perc);
 thisTable.print();
 thisTable.left();
