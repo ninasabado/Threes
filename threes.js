@@ -82,11 +82,16 @@ function check(one, two){
 }
 
 /* Table.HSHIFT Function 
-*/
-Table.prototype.hShift = function(start, last, left){
+ * Depending on boolean left, function shifts everything from
+   given first square to given last square left or right */
+Table.prototype.hShift = function(first, last, left){
 	if(left){
-		for(var j = start; j < last; j++)
+		for(var j = first; j < last; j++)
 			this.grid[j] = this.grid[j+1];
+	}
+	else{
+		for(var j = last; j != first; j--)
+			this.grid[j] = this.grid[j-1];
 	}
 	
 }
@@ -94,19 +99,16 @@ Table.prototype.hShift = function(start, last, left){
 /* Table.LEFT Function
  * Shifts all squares in grid to the left - O(N) */
 Table.prototype.left = function(){
-	// Checks the leftmost square
+	
+	// Checks the leftmost squares
 	for(var i = 0; i < this.grid.length; i+=this.col){
 		
-		console.log("Checking Square " + i);
-
 		// Check 1: Leftmost square is 0
 		// Function shifts everything over to the left
 		if(this.grid[i].val == 0){
-			console.log("LEFTMOST SQUARE IS 0, MOVE ALL");
-			var last = i + this.col - 1;	// Index of last in row
+			var last = i + (this.col-1);	// Index of last in row
 			this.hShift(i, last, true);
 			this.grid[last] = new Square(100);
-			this.print();
 		}
 
 		// Check 2: Leftmost square is NOT 0
@@ -117,6 +119,37 @@ Table.prototype.left = function(){
 			console.log("The two leftmost squares are mergeable");
 		}
 	}
+
+	console.log("Move to the LEFT:");
+	this.print();
+}
+
+/* Table.RIGHT Function
+ * Shifts all squares in grid to the right - O(N) */
+Table.prototype.right = function(){
+	
+	// Checks the rightmost squares
+	for(var i = this.col-1; i < this.grid.length; i+=this.col){
+		
+		// Check 1: Rightmost square is 0
+		// Function shifts everything over to the right
+		if(this.grid[i].val == 0){
+			var first = i - (this.col-1);	// Index of first in row
+			this.hShift(first, i, false);
+			this.grid[first] = new Square(100);
+		}
+
+		// Check 2: Leftmost square is NOT 0
+		// Keeps checking the two squares to see if mergeable
+		// If non-mergeable, checks the next two until mergeable is
+		// found or not moved
+		else if(i != this.grid.length && check(this.grid[i], this.grid[i-1])){
+			console.log("The two rightmost squares are mergeable");
+		}
+	}
+
+	console.log("Move to the RIGHT:");
+	this.print();
 }
 
 /* Takes in user's variables */
@@ -129,3 +162,4 @@ var user_perc = +process.argv[4];
 thisTable = new Table(user_x, user_y, user_perc);
 thisTable.print();
 thisTable.left();
+thisTable.right();
