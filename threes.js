@@ -34,11 +34,11 @@ function Table(ex, why, percentFilled){
 		// instantiating a random number from 0-2
 		for(var i = 0; i < this.row*this.col; i++){
 
-			if(this.per)
+			if(percentFilled)
 				this.per = percentFilled;	// If percentFilled exists
 			else
 				this.per = 50;				// Else defaults to 50
-			
+
 			this.grid.push(this.newSq());
 		}
 	}
@@ -97,26 +97,28 @@ Table.prototype.hShift = function(first, last, left){
 }
 
 /* Table.LEFT Function
- * Shifts all squares in grid to the left - O(N) */
+ * If leftmost square is 0, shifts everything to the left
+ * If leftmost two squares are mergeable, merges then shifts
+ * CURRENT VERSION: Shifts/merges can only be done near the wall */
 Table.prototype.left = function(){
 	
 	// Checks the leftmost squares
 	for(var i = 0; i < this.grid.length; i+=this.col){
-		
+		var first = i;					// Index of first in row
+		var last = i + (this.col-1);	// Index of last in row
+
 		// Check 1: Leftmost square is 0
-		// Function shifts everything over to the left
-		if(this.grid[i].val == 0){
-			var last = i + (this.col-1);	// Index of last in row
-			this.hShift(i, last, true);
-			this.grid[last] = new Square(100);
+		if(this.grid[first].val == 0){
+			this.hShift(first, last, true);
+			this.grid[last] = this.newSq();
 		}
 
 		// Check 2: Leftmost square is NOT 0
-		// Keeps checking the two squares to see if mergeable
-		// If non-mergeable, checks the next two until mergeable is
-		// found or not moved
-		else if(i+1 != this.grid.length && check(this.grid[i], this.grid[i+1])){
-			console.log("The two leftmost squares are mergeable");
+		else if(i+1 != this.grid.length 
+			&& check(this.grid[first], this.grid[first+1])){
+			this.grid[first].val += this.grid[first+1].val;
+			this.hShift(first+1, last, true);
+			this.grid[last] = this.newSq();
 		}
 	}
 
@@ -130,21 +132,21 @@ Table.prototype.right = function(){
 	
 	// Checks the rightmost squares
 	for(var i = this.col-1; i < this.grid.length; i+=this.col){
-		
+		var first = i - (this.col-1);	// Index of first in row
+		var last = i;					// Index of last in row
+
 		// Check 1: Rightmost square is 0
-		// Function shifts everything over to the right
-		if(this.grid[i].val == 0){
-			var first = i - (this.col-1);	// Index of first in row
-			this.hShift(first, i, false);
-			this.grid[first] = new Square(100);
+		if(this.grid[last].val == 0){
+			this.hShift(first, last, false);
+			this.grid[first] = this.newSq();
 		}
 
 		// Check 2: Leftmost square is NOT 0
-		// Keeps checking the two squares to see if mergeable
-		// If non-mergeable, checks the next two until mergeable is
-		// found or not moved
-		else if(i != this.grid.length && check(this.grid[i], this.grid[i-1])){
-			console.log("The two rightmost squares are mergeable");
+		else if(i != this.grid.length 
+			&& check(this.grid[last], this.grid[last-1])){
+			this.grid[last].val += this.grid[last-1].val;
+			this.hShift(first, last-1, false);
+			this.grid[first] = this.newSq();
 		}
 	}
 
