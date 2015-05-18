@@ -1,5 +1,6 @@
 /* The THREES Game 
  * An application in JS
+ * Inspired by Asher Vollmer's Threes
  * by Nina Sabado
 */
 
@@ -343,6 +344,6 @@ process.stdin.resume();
   });
 
   function done() {
-    console.log("\nThanks for playing THREES by Nina Sabado! Hope to see you again soon.");
+    console.log("\nThanks for playing THREES! Hope to see you again soon.");
     process.exit();
   }

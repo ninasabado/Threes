@@ -13,18 +13,18 @@ $ node threes [# of rows] [# of columns] [% of board filled]
 
 **INSTRUCTIONS:**
 
-| COMMAND | ACTION   |
-| * Configuration    |
-| prob    | Change the probability of tiles being filled |
-| reset   | Reset the game                               |
-| quit    | Exit the game                                |
-| * Movement         |
-| left      Go left  |
-| right     Go right |
-| up        Go up    |
-| down      Go down  |
+````
+COMMAND   | ACTION   
+* Configuration  
+  prob    | Change the probability of tiles being filled
+  reset   | Reset the game
+  quit    | Exit the game                                 
+* Movement          
+  left    | Go left   
+  right   | Go right  
+  up      | Go up     
+  down    | Go down   
+````
 
 **NOTE:**
 Threes can only currently combine values at the edges, but I'm looking to change this soon.
-
-
