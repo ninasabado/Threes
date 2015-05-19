@@ -7,6 +7,11 @@
 var score = 0;		// Total value of numbers combined
 var moves = 0;		// Total number of moves made
 
+var leftable  = true;
+var rightable = true;
+var uppable   = true;
+var downable  = true;
+
 /* SQUARE */
 
 /* SQUARE Object
@@ -64,11 +69,11 @@ Table.prototype.print = function(){
 		for(var i = 0; i < this.col; i++){
 			var v = this.grid[indx++].val;
 			if(v < 10)
-				string += "[   "+ v + "   ]";
+				string += "|   "+ v + "   |";
 			else if(v < 100)
-				string += "[  " + v + "   ]";
+				string += "|  " + v + "   |";
 			else if(v < 1000)
-				string += "[  " + v + "  ]";
+				string += "|  " + v + "  |";
 
 		}
 		string += "\n";
@@ -77,6 +82,13 @@ Table.prototype.print = function(){
 	console.log("MOVES: " + moves);
 	console.log("SCORE: " + score);
 	console.log(string);
+
+	// No moves remaining
+	// There exists no possible way to move a direction
+	if(!(leftable || rightable || uppable || downable)){
+		console.log("\nNo moves remaining.\nGAME OVER.");
+		done();
+	}
 }
 
 /* CHECK Function
@@ -129,6 +141,7 @@ Table.prototype.vShift = function(first, last, up){
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
 Table.prototype.left = function(){
 	moves++;
+	leftable = false;
 	
 	// Checks the leftmost squares
 	for(var i = 0; i < this.grid.length; i+=this.col){
@@ -149,6 +162,13 @@ Table.prototype.left = function(){
 			this.hShift(first+1, last, bool);
 			this.grid[last] = this.newSq();
 		}
+
+		// Implements Check 1 and Check 2
+		// There exists, in any row, a way for the row to shift left
+		if((this.grid[first].val == 0) 
+			|| (i+1 != this.grid.length 
+			&& check(this.grid[first], this.grid[first+1])))
+			leftable = true;
 	}
 
 	console.log("\nYou moved LEFT:");
@@ -161,6 +181,7 @@ Table.prototype.left = function(){
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.right = function(){
  	moves++;
+ 	rightable = false;
 	
 	// Checks the rightmost squares
 	for(var i = this.col-1; i < this.grid.length; i+=this.col){
@@ -181,6 +202,13 @@ Table.prototype.left = function(){
 			this.hShift(first, last-1, bool);
 			this.grid[first] = this.newSq();
 		}
+
+		// Implements Check 1 and Check 2
+		// There exists, in any row, a way for the row to shift right
+		if((this.grid[last].val == 0) 
+			|| (i != this.grid.length 
+			&& check(this.grid[last], this.grid[last-1])))
+			rightable = true;
 	}
 
 	console.log("\nYou moved RIGHT:");
@@ -193,6 +221,7 @@ Table.prototype.left = function(){
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.up = function(){
  	moves++;
+ 	uppable = false;
 
  	// Checks the topmost squares
  	for(var i = 0; i < this.col; i++){
@@ -212,6 +241,12 @@ Table.prototype.left = function(){
  			this.vShift(first+this.col, last, bool);
  			this.grid[last] = this.newSq();
  		}
+
+ 		// Implements Check 1 and Check 2
+		// There exists, in any row, a way for the row to shift left
+		if((this.grid[first].val == 0)
+			|| check(this.grid[first], this.grid[first+this.col]))
+			uppable = true;
  	}
 
  	console.log("\nYou moved UP:");
@@ -224,6 +259,7 @@ Table.prototype.left = function(){
  * CURRENT VERSION: Shifts/merges can only be done near the wall */
  Table.prototype.down = function(){
  	moves++;
+ 	downable = false;
 
  	// Checks the topmost squares
  	for(var i = 0; i < this.col; i++){
@@ -243,6 +279,12 @@ Table.prototype.left = function(){
  			this.vShift(first, last-this.col, bool);
  			this.grid[first] = this.newSq();
  		}
+
+ 		// Implements Check 1 and Check 2
+		// There exists, in any row, a way for the row to shift left
+		if((this.grid[last].val == 0) 
+			|| check(this.grid[last], this.grid[last-this.col]))	
+			downable = true;	
  	}
 
  	console.log("\nYou moved DOWN:");
@@ -273,6 +315,7 @@ function halp(){
 	+ "\nCOMMAND\t\tACTION"
 	+ "\n* Configuration"
 	+ "\n  prob\t\tChange the probability of square being filled"
+	+ "\n  show\t\tShow the table so far"
 	+ "\n  reset\t\tReset the game"
 	+ "\n  quit\t\tExit the game"
 	+ "\n* Movement"
@@ -290,13 +333,16 @@ process.stdin.resume();
   var expectInt = false;
 
   process.stdin.on("data", function (text) {
-    text = text.substring( 0, text.indexOf("\r\n"));	// Chops off \r\n
+    text = text.substring( 0, text.indexOf("\r\n") );	// Chops off \r\n
     
     // Ensures that a random typed integer wouldn't screw up the code
     if(expectInt){
     	var x = parseInt(text);
-    	if(!isNaN(text) && (x|0)==x)
+    	if(!isNaN(text) && (x|0)==x){
     		game.per = x;
+    		console.log("Probability changed to " + x + "%");
+    		game.print();
+    	}
     	else
     		console.log("That's not in the right format, sorry.")
     	expectInt = false;
@@ -312,6 +358,9 @@ process.stdin.resume();
     		console.log("\nWhat % would you like to change it to?");
     		console.log("(Please input the integer only)");
     		expectInt = true;
+    		break;
+    	case "show":
+    		game.print();
     		break;
     	case "reset":
     		game = new Table(user_x, user_y, game.per);
