@@ -41,13 +41,15 @@ VARIABLES:
    moves	Keeps track of the total number of moves made
 
    leftable, rightable, uppable, downable
-   These four variables keep track of whether it's possible to move or not. (If all four are false, then it signals the GAME OVER).
+   These four variables keep track of whether it's possible to move or not.
+   (If all four are false, then it signals the GAME OVER).
 
 OBJECTS & INTERNAL FUNCTIONS
    
 1. Square Object
    A tile object, that only contains a value.
-   Integers could have been used instead, but for further ease of adaptation later,  I chose to make this an object.
+   Integers could have been used instead, but for further ease of adaptation later,
+   I chose to make this an object.
    
    INT. VARIABLES: val
 
