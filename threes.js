@@ -359,7 +359,7 @@ function analyze(text){
 		text = text.substring( 0, text.indexOf("\r\n") );
 		// Chops off just \n if found, *nix Systems
 		else if(text.indexOf("\n") > 0)
-			text = text.substring( 0, text.indexOf("\r") );
+			text = text.substring( 0, text.indexOf("\n") );
 
 	  	// Ensures that a random typed integer wouldn't screw up the code
 	  	if(expectInt){
@@ -463,8 +463,7 @@ function analyze(text){
 
   5. Some small bug seems to happen when the game detects "GAME OVER". Even
   	 when there are '0' blocks near the top, it still triggers the "GAME OVER"
-  	 subroutine.
+  	 subroutine. I believe it's linked to the up/down function, but I'll need
+  	 a little more time to figure it out.
 
  */
-
-
