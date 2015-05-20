@@ -328,13 +328,14 @@ function halp(){
 /* STANDARD INPUT
  * Code adapted from https://docs.nodejitsu.com/ */
 process.stdin.resume();
-  process.stdin.setEncoding("utf8");
-  var util = require("util");
-  var expectInt = false;
+process.stdin.setEncoding("utf8");
+var util = require("util");
+var expectInt = false;
 
-  process.stdin.on("data", function (text) {
-    text = text.substring( 0, text.indexOf("\r\n") );	// Chops off \r\n
-    
+process.stdin.on("data", function (text) {
+  text = text.substring( 0, text.indexOf("\n") );	// Chops off \n, just Mac
+  text = text.substring( 0, text.indexOf("\r") );	// Chops off \r, Windows
+  
     // Ensures that a random typed integer wouldn't screw up the code
     if(expectInt){
     	var x = parseInt(text);
