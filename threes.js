@@ -1,4 +1,4 @@
- The THREES Game 
+ /*The THREES Game 
  * An application in JS
  * Inspired by Asher Vollmer's Threes
  * by Nina Sabado
@@ -330,91 +330,100 @@ function halp(){
 process.stdin.resume();
 process.stdin.setEncoding("utf8");
 var expectInt = false;
-// var util = require("util");
+var util = require("util");
 
-// process.stdin.on("data", function (text) {
-process.stdin.on("readable", function(){
+process.stdin.on("data", function (text) {
+// Alternate code possibility I tried when figuring out the Mac
+// situation.
+// process.stdin.on("readable", function(){
 
-	var text = process.stdin.read();
+	//var text = process.stdin.read();
 
-	if(text != NULL)
-		process.stdin.write("data :" + text);
-	else
-		process.stdin.write("You screwed up");
+	if(text != null){
 
-	console.log("data received before chop: " + text);
+		// Chops off \r\n if found, Windows
+		if(text.indexOf("\r\n") > 0)
+			text = text.substring( 0, text.indexOf("\r\n") );
+		// Chops off just \n if found, *nix Systems
+		else if(text.indexOf("\n") > 0)
+			text = text.substring( 0, text.indexOf("\r") );
 
-	text = text.substring( 0, text.indexOf("\n") );	// Chops off \n, just Mac
-	text = text.substring( 0, text.indexOf("\r") );	// Chops off \r, Windows
-  
-	console.log("data received after chop: " + text);
+	  	// Ensures that a random typed integer wouldn't screw up the code
+	  	if(expectInt){
+	  		var x = parseInt(text);
+	  		if(!isNaN(text) && (x|0)==x){
+	  			game.per = x;
+	  			console.log("Probability changed to " + x + "%");
+	  			game.print();
+	  		}
+	  		else
+	  			console.log("That's not in the right format, sorry.")
+	  		expectInt = false;
+	  	}
 
-  	// Ensures that a random typed integer wouldn't screw up the code
-  	if(expectInt){
-  		var x = parseInt(text);
-  		if(!isNaN(text) && (x|0)==x){
-  			game.per = x;
-   			console.log("Probability changed to " + x + "%");
-   			game.print();
-   		}
-   		else
-   			console.log("That's not in the right format, sorry.")
-   			expectInt = false;
-    	}
+	    // Other commands
+	    else{
+	    	switch(text){
+	    		case "HELP":
+	    		halp();
+	    		break;
+	    		case "prob":
+	    		console.log("\nWhat % would you like to change it to?");
+	    		console.log("(Please input the integer only)");
+	    		expectInt = true;
+	    		break;
+	    		case "show":
+	    		game.print();
+	    		break;
+	    		case "reset":
+	    		game = new Table(user_x, user_y, game.per);
+	    		moves = score = 0;
+	    		console.log("\nYou've reset the game.")
+	    		game.print();
+	    		break;
+	    		case "quit":
+	    		done();
+	    		break;
 
-    // Other commands
-    else{
-    	switch(text){
-    		case "HELP":
-    		halp();
-    		break;
-    		case "prob":
-    		console.log("\nWhat % would you like to change it to?");
-    		console.log("(Please input the integer only)");
-    		expectInt = true;
-    		break;
-    		case "show":
-    		game.print();
-    		break;
-    		case "reset":
-    		game = new Table(user_x, user_y, game.per);
-    		moves = score = 0;
-    		console.log("\nYou've reset the game.")
-    		game.print();
-    		break;
-    		case "quit":
-    		done();
-    		break;
+	    		case "left":
+	    		game.left();
+	    		break;
+	    		case "right":
+	    		game.right();
+	    		break;
+	    		case "up":
+	    		game.up();
+	    		break;
+	    		case "down":
+	    		game.down();
+	    		break;
 
-    		case "left":
-    		game.left();
-    		break;
-    		case "right":
-    		game.right();
-    		break;
-    		case "up":
-    		game.up();
-    		break;
-    		case "down":
-    		game.down();
-    		break;
+	    		default:
+	    		console.log("\nSorry, I don't recognize that command."
+	    			+"\nIf you're confused, please type HELP "
+	    			+"for the instructions.");
+	    	}
+	    }	
+	}
 
-    		default:
-    		console.log("\nSorry, I don't recognize that command."
-    			+"\nIf you're confused, please type HELP for the instructions.");
-    	}
-    }
 });
 
-function done() {
-	console.log("\nThanks for playing THREES! Hope to see you again soon.");
-	process.exit();
-}
+ function done() {
+ 	console.log("\nThanks for playing THREES! Hope to see you again soon.");
+ 	process.exit();
+ }
 
 
 /* THINGS TO FIX:
  1. Code has to work with MAC
  2. GAME OVER code
- 3. Recheck movements -- left, up, right, down
+ 3. Recheck movements -- left, up, right, down 
+ */
+
+ /* SOME DIFFICULTIES
+  1. Fairly late in the game, I realized that the stdin for Mac that
+     the program got was different from the stdin of my Windows.
+     Belatedly, I remembered the difference with \r\n and \n.  
+ */
 
 
