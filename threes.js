@@ -85,7 +85,7 @@ Table.prototype.print = function(){
 
 	// No moves remaining
 	// There exists no possible way to move a direction
-	if(!(leftable || rightable || uppable || downable)){
+	if(!leftable && !rightable && !downable && !uppable){
 		console.log("\nNo moves remaining.\nGAME OVER.");
 		done();
 	}
@@ -151,6 +151,7 @@ Table.prototype.print = function(){
 
 		// Check 1: Leftmost square is 0
 		if(this.grid[first].val == 0){
+			
 			this.hShift(first, last, bool);
 			this.grid[last] = this.newSq();
 		}
@@ -158,16 +159,18 @@ Table.prototype.print = function(){
 		// Check 2: Leftmost square is NOT 0, but ends are mergeable
 		else if(i+1 != this.grid.length 
 			&& check(this.grid[first], this.grid[first+1])){
+
 			score += (this.grid[first].val += this.grid[first+1].val);
-		this.hShift(first+1, last, bool);
-		this.grid[last] = this.newSq();
+			this.hShift(first+1, last, bool);
+			this.grid[last] = this.newSq();
 	}
 
 		// Implements Check 1 and Check 2
 		// There exists, in any row, a way for the row to shift left
 		if((this.grid[first].val == 0) 
 			|| (i+1 != this.grid.length 
-				&& check(this.grid[first], this.grid[first+1])))
+			&& check(this.grid[first], this.grid[first+1])))
+			
 			leftable = true;
 	}
 
@@ -191,6 +194,7 @@ Table.prototype.print = function(){
 
 		// Check 1: Rightmost square is 0
 		if(this.grid[last].val == 0){
+			
 			this.hShift(first, last, bool);
 			this.grid[first] = this.newSq();
 		}
@@ -198,16 +202,18 @@ Table.prototype.print = function(){
 		// Check 2: Rightmost square is NOT 0 but ends are mergeable
 		else if(i != this.grid.length 
 			&& check(this.grid[last], this.grid[last-1])){
+			
 			score += (this.grid[last].val += this.grid[last-1].val);
-		this.hShift(first, last-1, bool);
-		this.grid[first] = this.newSq();
+			this.hShift(first, last-1, bool);
+			this.grid[first] = this.newSq();
 	}
 
 		// Implements Check 1 and Check 2
 		// There exists, in any row, a way for the row to shift right
 		if((this.grid[last].val == 0) 
 			|| (i != this.grid.length 
-				&& check(this.grid[last], this.grid[last-1])))
+			&& check(this.grid[last], this.grid[last-1])))
+			
 			rightable = true;
 	}
 
@@ -231,12 +237,14 @@ Table.prototype.print = function(){
 
  		// Check 1: Topmost square is 0
  		if(this.grid[first].val == 0){
+ 			
  			this.vShift(first, last, bool);
  			this.grid[last] = this.newSq();
  		}
 
  		// Check 2: Topmost square is NOT 0 but tops are mergeable
  		if(check(this.grid[first], this.grid[first+this.col])){
+ 			
  			score += (this.grid[first].val += this.grid[first+this.col].val);
  			this.vShift(first+this.col, last, bool);
  			this.grid[last] = this.newSq();
@@ -246,6 +254,7 @@ Table.prototype.print = function(){
 		// There exists, in any row, a way for the row to shift left
 		if((this.grid[first].val == 0)
 			|| check(this.grid[first], this.grid[first+this.col]))
+			
 			uppable = true;
 	}
 
@@ -269,12 +278,14 @@ Table.prototype.print = function(){
 
  		// Check 1: Bottommost square is 0
  		if(this.grid[last].val == 0){
+ 			
  			this.vShift(first, last, bool);
  			this.grid[first] = this.newSq();
  		}
 
  		// Check 2: Bottommost square is NOT 0 but bottoms are mergeable
  		if(check(this.grid[last], this.grid[last-this.col])){
+ 			
  			score += (this.grid[last].val += this.grid[last-this.col].val);
  			this.vShift(first, last-this.col, bool);
  			this.grid[first] = this.newSq();
@@ -284,6 +295,7 @@ Table.prototype.print = function(){
 		// There exists, in any row, a way for the row to shift left
 		if((this.grid[last].val == 0) 
 			|| check(this.grid[last], this.grid[last-this.col]))	
+			
 			downable = true;	
 	}
 
@@ -322,28 +334,29 @@ function halp(){
 		+ "\n  left\t\tGo left"
 		+ "\n  right\t\tGo right"
 		+ "\n  up\t\tGo up"
-		+ "\n  down\t\tGo down");
+		+ "\n  down\t\tGo down\n");
 }
 
 /* STANDARD INPUT
 * Code adapted from https://docs.nodejitsu.com/ */
-process.stdin.resume();
 process.stdin.setEncoding("utf8");
 var expectInt = false;
-var util = require("util");
+//var util = require("util");
 
-process.stdin.on("data", function (text) {
-// Alternate code possibility I tried when figuring out the Mac
-// situation.
-// process.stdin.on("readable", function(){
+process.stdin.on("readable", function(){
 
-	//var text = process.stdin.read();
+	var text = process.stdin.read();
 
 	if(text != null){
+		analyze(text);
+	}
 
-		// Chops off \r\n if found, Windows
-		if(text.indexOf("\r\n") > 0)
-			text = text.substring( 0, text.indexOf("\r\n") );
+});
+
+function analyze(text){
+	// Chops off \r\n if found, Windows
+	if(text.indexOf("\r\n") > 0)
+		text = text.substring( 0, text.indexOf("\r\n") );
 		// Chops off just \n if found, *nix Systems
 		else if(text.indexOf("\n") > 0)
 			text = text.substring( 0, text.indexOf("\r") );
@@ -353,60 +366,58 @@ process.stdin.on("data", function (text) {
 	  		var x = parseInt(text);
 	  		if(!isNaN(text) && (x|0)==x){
 	  			game.per = x;
-	  			console.log("Probability changed to " + x + "%");
+	  			console.log("Probability changed to " + x + "%\n");
 	  			game.print();
 	  		}
 	  		else
 	  			console.log("That's not in the right format, sorry.")
 	  		expectInt = false;
-	  	}
-
-	    // Other commands
-	    else{
-	    	switch(text){
-	    		case "HELP":
-	    		halp();
-	    		break;
-	    		case "prob":
-	    		console.log("\nWhat % would you like to change it to?");
-	    		console.log("(Please input the integer only)");
-	    		expectInt = true;
-	    		break;
-	    		case "show":
-	    		game.print();
-	    		break;
-	    		case "reset":
-	    		game = new Table(user_x, user_y, game.per);
-	    		moves = score = 0;
-	    		console.log("\nYou've reset the game.")
-	    		game.print();
-	    		break;
-	    		case "quit":
-	    		done();
-	    		break;
-
-	    		case "left":
-	    		game.left();
-	    		break;
-	    		case "right":
-	    		game.right();
-	    		break;
-	    		case "up":
-	    		game.up();
-	    		break;
-	    		case "down":
-	    		game.down();
-	    		break;
-
-	    		default:
-	    		console.log("\nSorry, I don't recognize that command."
-	    			+"\nIf you're confused, please type HELP "
-	    			+"for the instructions.");
-	    	}
-	    }	
 	}
 
-});
+	// Other commands
+	else{
+    	switch(text){
+    		case "HELP":
+    		halp();
+    		break;
+    		case "prob":
+    		console.log("\nWhat % would you like to change it to?");
+    		console.log("(Please input the integer only)");
+    		expectInt = true;
+    		break;
+    		case "show":
+    		game.print();
+    		break;
+    		case "reset":
+    		game = new Table(user_x, user_y, game.per);
+    		moves = score = 0;
+    		console.log("\nYou've reset the game.\n")
+    		game.print();
+    		break;
+    		case "quit":
+    		done();
+    		break;
+
+    		case "left":
+    		game.left();
+    		break;
+    		case "right":
+    		game.right();
+    		break;
+    		case "up":
+    		game.up();
+    		break;
+    		case "down":
+    		game.down();
+    		break;
+
+    		default:
+    		console.log("\nSorry, I don't recognize that command."
+    			+"\nIf you're confused, please type HELP "
+    			+"for instructions.\n");
+    	}
+	}
+}
 
  function done() {
  	console.log("\nThanks for playing THREES! Hope to see you again soon.");
@@ -420,10 +431,40 @@ process.stdin.on("data", function (text) {
  3. Recheck movements -- left, up, right, down 
  */
 
- /* SOME DIFFICULTIES
-  1. Fairly late in the game, I realized that the stdin for Mac that
+ /* SOME DIFFICULTIES && THOUGHTS
+  1. Fairly late today, I realized that the stdin for Mac that
      the program got was different from the stdin of my Windows.
-     Belatedly, I remembered the difference with \r\n and \n.  
+     Belatedly, I remembered the difference with \r\n and \n, which
+     differs between the systems. Thanks to a friend, I will hopefully
+     get it fixed in time.
+
+     FIX: Turns out that stdin.resume() enables an "old" compatability 
+     mode on process.stdin streams. 
+     Read more here: http://stackoverflow.com/questions/23569171/
+
+  2. Randomly generated tables, for example, are difficult to guarantee
+     predictable behavior for testing code cases. Next time, if I had
+     more time (and I might still fix it anyway while I'm still testing
+     things out), I'd like to create a sample table, or a way for the 
+     samples and edge cases to be reflected. In my haste, I hadn't thought
+     of implementing that beforehand, or having that option, and it would
+     have made my otherwise haphazard testing a lot easier.
+
+  3. I feel like the implementation of variables for the methods may be
+     a little messy. I want to tighten things up more and clean up all the
+     variables to make the code a lot readable. It's my first time really
+     working with just JavaScript for an extended period of time, and it's
+     weird going back to a "more complex" language from C. I wanted to know
+     about the pointers and mallocs from JS but hadn't known enough of it
+     to really understand how to implement it the way I did C.
+
+  4. I want to try and make it so that if the row is unmovable to a certain
+     point, then shifting a mergeable block in the middle combine the values.
+
+  5. Some small bug seems to happen when the game detects "GAME OVER". Even
+  	 when there are '0' blocks near the top, it still triggers the "GAME OVER"
+  	 subroutine.
+
  */
 
 
