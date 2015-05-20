@@ -1,4 +1,4 @@
-/* The THREES Game 
+ The THREES Game 
  * An application in JS
  * Inspired by Asher Vollmer's Threes
  * by Nina Sabado
@@ -329,10 +329,18 @@ function halp(){
 * Code adapted from https://docs.nodejitsu.com/ */
 process.stdin.resume();
 process.stdin.setEncoding("utf8");
-var util = require("util");
 var expectInt = false;
+// var util = require("util");
 
-process.stdin.on("data", function (text) {
+// process.stdin.on("data", function (text) {
+process.stdin.on("readable", function(){
+
+	var text = process.stdin.read();
+
+	if(text != NULL)
+		process.stdin.write("data :" + text);
+	else
+		process.stdin.write("You screwed up");
 
 	console.log("data received before chop: " + text);
 
@@ -410,4 +418,3 @@ function done() {
  3. Recheck movements -- left, up, right, down
 
 
-*/
