@@ -336,6 +336,8 @@ process.stdin.on("data", function (text) {
   text = text.substring( 0, text.indexOf("\n") );	// Chops off \n, just Mac
   text = text.substring( 0, text.indexOf("\r") );	// Chops off \r, Windows
   
+  console.log("data received: " + text);
+  
     // Ensures that a random typed integer wouldn't screw up the code
     if(expectInt){
     	var x = parseInt(text);
@@ -397,3 +399,9 @@ process.stdin.on("data", function (text) {
     console.log("\nThanks for playing THREES! Hope to see you again soon.");
     process.exit();
   }
+
+
+/* THINGS TO FIX:
+ 1. It working with mac
+
+*/
