@@ -4,8 +4,8 @@
  * by Nina Sabado
  */
 
-var score = 0;		// Total value of numbers combined
-var moves = 0;		// Total number of moves made
+var score = 0;        // Total value of numbers combined
+var moves = 0;        // Total number of moves made
 
 var leftable  = true;
 var rightable = true;
@@ -30,24 +30,24 @@ function Table(ex, why, percentFilled){
 	this.row = 0;
 	this.col = 0;
 
-	// If x and y values exist, protects against NaN
-	if(ex && why ){
-		this.row = ex;
-		this.col = why;
-		this.grid = [];
+        // If x and y values exist, protects against NaN
+        if(ex && why ){
+        	this.row = ex;
+        	this.col = why;
+        	this.grid = [];
 
-		// Pushes a new Square object for each grid in the table,
-		// instantiating a random number from 0-2
-		for(var i = 0; i < this.row*this.col; i++){
+        // Pushes a new Square object for each grid in the table,
+        // instantiating a random number from 0-2
+        for(var i = 0; i < this.row*this.col; i++){
 
-			if(percentFilled)
-				this.per = percentFilled;	// If percentFilled exists
-			else
-				this.per = 50;				// Else defaults to 50
+        	if(percentFilled)
+        this.per = percentFilled;        // If percentFilled exists
+    else
+        this.per = 50;        // Else defaults to 50
 
-			this.grid.push(this.newSq());
-		}
-	}
+    this.grid.push(this.newSq());
+}
+}
 }
 
 /* Table.NEWSQ Function
@@ -83,13 +83,13 @@ Table.prototype.print = function(){
 	console.log("SCORE: " + score);
 	console.log(string);
 
-	// No moves remaining
-	// There exists no possible way to move a direction
-	if(!leftable && !rightable && !downable && !uppable){
-		console.log("\nNo moves remaining.\nGAME OVER.");
-		done();
-	}
-}
+        // No moves remaining
+        // There exists no possible way to move a direction
+        if(!leftable && !rightable && !downable && !uppable){
+        	console.log("\nNo moves remaining.\nGAME OVER.");
+        	done();
+        }
+    }
 
 /* CHECK Function
  * Function checks if merging the squares is possible
@@ -107,18 +107,18 @@ Table.prototype.print = function(){
  * Depending on boolean left, function shifts everything from
  given first square to given last square left or right */
  Table.prototype.hShift = function(first, last, left){
-	// Shifts everything to the left, starts at the first and increments
-	if(left){
-		for(var j = first; j != last; j++)
-			this.grid[j] = this.grid[j+1];
-	}
-	// Shifts everything to the right, starts at the last and decrements
-	else{
-		for(var j = last; j != first; j--)
-			this.grid[j] = this.grid[j-1];
-	}
-	
-}
+        // Shifts everything to the left, starts at the first and increments
+        if(left){
+        	for(var j = first; j != last; j++)
+        		this.grid[j] = this.grid[j+1];
+        }
+        // Shifts everything to the right, starts at the last and decrements
+        else{
+        	for(var j = last; j != first; j--)
+        		this.grid[j] = this.grid[j-1];
+        }
+        
+    }
 
 /* Table.VSHIFT Function 
  * Depending on boolean up, function shifts everything from
@@ -143,39 +143,39 @@ Table.prototype.print = function(){
  	moves++;
  	leftable = false;
 
-	// Checks the leftmost squares
-	for(var i = 0; i < this.grid.length; i+=this.col){
-		var first = i;					// Index of first in row
-		var last  = i + (this.col-1);	// Index of last in row
-		var bool  = true;
+        // Checks the leftmost squares
+        for(var i = 0; i < this.grid.length; i+=this.col){
+        var first = i;        // Index of first in row
+        var last  = i + (this.col-1);        // Index of last in row
+        var bool  = true;
 
-		// Check 1: Leftmost square is 0
-		if(this.grid[first].val == 0){
-			
-			this.hShift(first, last, bool);
-			this.grid[last] = this.newSq();
-		}
+        // Check 1: Leftmost square is 0
+        if(this.grid[first].val == 0){
 
-		// Check 2: Leftmost square is NOT 0, but ends are mergeable
-		else if(i+1 != this.grid.length 
-			&& check(this.grid[first], this.grid[first+1])){
+        	this.hShift(first, last, bool);
+        	this.grid[last] = this.newSq();
+        }
 
-			score += (this.grid[first].val += this.grid[first+1].val);
-			this.hShift(first+1, last, bool);
-			this.grid[last] = this.newSq();
-	}
+        // Check 2: Leftmost square is NOT 0, but ends are mergeable
+        else if(i+1 != this.grid.length 
+        	&& check(this.grid[first], this.grid[first+1])){
 
-		// Implements Check 1 and Check 2
-		// There exists, in any row, a way for the row to shift left
-		if((this.grid[first].val == 0) 
-			|| (i+1 != this.grid.length 
-			&& check(this.grid[first], this.grid[first+1])))
-			
-			leftable = true;
-	}
+        	score += (this.grid[first].val += this.grid[first+1].val);
+        this.hShift(first+1, last, bool);
+        this.grid[last] = this.newSq();
+    }
 
-	console.log("\nYou moved LEFT:");
-	this.print();
+        // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift left
+        if((this.grid[first].val == 0) 
+        	|| (i+1 != this.grid.length 
+        		&& check(this.grid[first], this.grid[first+1])))
+
+        	leftable = true;
+    }
+
+    console.log("\nYou moved LEFT:");
+    this.print();
 }
 
 /* Table.RIGHT Function
@@ -186,39 +186,39 @@ Table.prototype.print = function(){
  	moves++;
  	rightable = false;
 
-	// Checks the rightmost squares
-	for(var i = this.col-1; i < this.grid.length; i+=this.col){
-		var first = i - (this.col-1);	// Index of first in row
-		var last  = i;					// Index of last in row
-		var bool  = false;
+        // Checks the rightmost squares
+        for(var i = this.col-1; i < this.grid.length; i+=this.col){
+        var first = i - (this.col-1);        // Index of first in row
+        var last  = i;        // Index of last in row
+        var bool  = false;
 
-		// Check 1: Rightmost square is 0
-		if(this.grid[last].val == 0){
-			
-			this.hShift(first, last, bool);
-			this.grid[first] = this.newSq();
-		}
+        // Check 1: Rightmost square is 0
+        if(this.grid[last].val == 0){
 
-		// Check 2: Rightmost square is NOT 0 but ends are mergeable
-		else if(i != this.grid.length 
-			&& check(this.grid[last], this.grid[last-1])){
-			
-			score += (this.grid[last].val += this.grid[last-1].val);
-			this.hShift(first, last-1, bool);
-			this.grid[first] = this.newSq();
-	}
+        	this.hShift(first, last, bool);
+        	this.grid[first] = this.newSq();
+        }
 
-		// Implements Check 1 and Check 2
-		// There exists, in any row, a way for the row to shift right
-		if((this.grid[last].val == 0) 
-			|| (i != this.grid.length 
-			&& check(this.grid[last], this.grid[last-1])))
-			
-			rightable = true;
-	}
+        // Check 2: Rightmost square is NOT 0 but ends are mergeable
+        else if(i != this.grid.length 
+        	&& check(this.grid[last], this.grid[last-1])){
 
-	console.log("\nYou moved RIGHT:");
-	this.print();
+        	score += (this.grid[last].val += this.grid[last-1].val);
+        this.hShift(first, last-1, bool);
+        this.grid[first] = this.newSq();
+    }
+
+        // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift right
+        if((this.grid[last].val == 0) 
+        	|| (i != this.grid.length 
+        		&& check(this.grid[last], this.grid[last-1])))
+
+        	rightable = true;
+    }
+
+    console.log("\nYou moved RIGHT:");
+    this.print();
 }
 
 /* Table.UP Function
@@ -229,37 +229,37 @@ Table.prototype.print = function(){
  	moves++;
  	uppable = false;
 
- 	// Checks the topmost squares
- 	for(var i = 0; i < this.col; i++){
- 		var first = i;								// Index of top in column
-		var last  = i+(this.col*(this.row-1));		// Index of last in column
-		var bool  = true;
+         // Checks the topmost squares
+         for(var i = 0; i < this.col; i++){
+         var first = i;        // Index of top in column
+        var last  = i+(this.col*(this.row-1));        // Index of last in column
+        var bool  = true;
 
- 		// Check 1: Topmost square is 0
- 		if(this.grid[first].val == 0){
- 			
- 			this.vShift(first, last, bool);
- 			this.grid[last] = this.newSq();
- 		}
+         // Check 1: Topmost square is 0
+         if(this.grid[first].val == 0){
 
- 		// Check 2: Topmost square is NOT 0 but tops are mergeable
- 		if(check(this.grid[first], this.grid[first+this.col])){
- 			
- 			score += (this.grid[first].val += this.grid[first+this.col].val);
- 			this.vShift(first+this.col, last, bool);
- 			this.grid[last] = this.newSq();
- 		}
+         	this.vShift(first, last, bool);
+         	this.grid[last] = this.newSq();
+         }
 
- 		// Implements Check 1 and Check 2
-		// There exists, in any row, a way for the row to shift left
-		if((this.grid[first].val == 0)
-			|| check(this.grid[first], this.grid[first+this.col]))
-			
-			uppable = true;
-	}
+         // Check 2: Topmost square is NOT 0 but tops are mergeable
+         if(check(this.grid[first], this.grid[first+this.col])){
 
-	console.log("\nYou moved UP:");
-	this.print();
+         	score += (this.grid[first].val += this.grid[first+this.col].val);
+         	this.vShift(first+this.col, last, bool);
+         	this.grid[last] = this.newSq();
+         }
+
+         // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift left
+        if((this.grid[first].val == 0)
+        	|| check(this.grid[first], this.grid[first+this.col]))
+
+        	uppable = true;
+    }
+
+    console.log("\nYou moved UP:");
+    this.print();
 }
 
  /* Table.DOWN Function
@@ -270,37 +270,37 @@ Table.prototype.print = function(){
  	moves++;
  	downable = false;
 
- 	// Checks the topmost squares
- 	for(var i = 0; i < this.col; i++){
- 		var first = i;								// Index of top in column
-		var last  = i+(this.col*(this.row-1));		// Index of last in column
-		var bool  = false;
+         // Checks the topmost squares
+         for(var i = 0; i < this.col; i++){
+         var first = i;        // Index of top in column
+        var last  = i+(this.col*(this.row-1));        // Index of last in column
+        var bool  = false;
 
- 		// Check 1: Bottommost square is 0
- 		if(this.grid[last].val == 0){
- 			
- 			this.vShift(first, last, bool);
- 			this.grid[first] = this.newSq();
- 		}
+         // Check 1: Bottommost square is 0
+         if(this.grid[last].val == 0){
 
- 		// Check 2: Bottommost square is NOT 0 but bottoms are mergeable
- 		if(check(this.grid[last], this.grid[last-this.col])){
- 			
- 			score += (this.grid[last].val += this.grid[last-this.col].val);
- 			this.vShift(first, last-this.col, bool);
- 			this.grid[first] = this.newSq();
- 		}
+         	this.vShift(first, last, bool);
+         	this.grid[first] = this.newSq();
+         }
 
- 		// Implements Check 1 and Check 2
-		// There exists, in any row, a way for the row to shift left
-		if((this.grid[last].val == 0) 
-			|| check(this.grid[last], this.grid[last-this.col]))	
-			
-			downable = true;	
-	}
+         // Check 2: Bottommost square is NOT 0 but bottoms are mergeable
+         if(check(this.grid[last], this.grid[last-this.col])){
 
-	console.log("\nYou moved DOWN:");
-	this.print();
+         	score += (this.grid[last].val += this.grid[last-this.col].val);
+         	this.vShift(first, last-this.col, bool);
+         	this.grid[first] = this.newSq();
+         }
+
+         // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift left
+        if((this.grid[last].val == 0) 
+        	|| check(this.grid[last], this.grid[last-this.col]))        
+
+        	downable = true;        
+    }
+
+    console.log("\nYou moved DOWN:");
+    this.print();
 }
 
 /* Takes in user's variables */
@@ -310,8 +310,8 @@ for(i = 0; i < +process.argv.length; i++){
 	if(+process.argv[i].indexOf("threes") > 1)
 		break;
 }
-var user_x = 	+process.argv[++i];
-var user_y = 	+process.argv[++i];
+var user_x =         +process.argv[++i];
+var user_y =         +process.argv[++i];
 var user_perc = +process.argv[++i];
 
 
@@ -354,81 +354,82 @@ process.stdin.on("readable", function(){
 });
 
 function analyze(text){
-	// Chops off \r\n if found, Windows
-	if(text.indexOf("\r\n") > 0)
-		text = text.substring( 0, text.indexOf("\r\n") );
-		// Chops off just \n if found, *nix Systems
-		else if(text.indexOf("\n") > 0)
-			text = text.substring( 0, text.indexOf("\n") );
+        // Chops off \r\n if found, Windows
+        if(text.indexOf("\r\n") > 0)
+        	text = text.substring( 0, text.indexOf("\r\n") );
+        // Chops off just \n if found, *nix Systems
+        else if(text.indexOf("\n") > 0)
+        	text = text.substring( 0, text.indexOf("\n") );
 
-	  	// Ensures that a random typed integer wouldn't screw up the code
-	  	if(expectInt){
-	  		var x = parseInt(text);
-	  		if(!isNaN(text) && (x|0)==x){
-	  			game.per = x;
-	  			console.log("Probability changed to " + x + "%\n");
-	  			game.print();
-	  		}
-	  		else
-	  			console.log("That's not in the right format, sorry.")
-	  		expectInt = false;
-	}
+                  // Ensures that a random typed integer wouldn't screw up the code
+                  if(expectInt){
+                  	var x = parseInt(text);
+                  	if(!isNaN(text) && (x|0)==x){
+                  		game.per = x;
+                  		console.log("Probability changed to " + x + "%\n");
+                  		game.print();
+                  	}
+                  	else
+                  		console.log("That's not in the right format, sorry.")
+                  	expectInt = false;
+                  }
 
-	// Other commands
-	else{
-    	switch(text){
-    		case "HELP":
-    		halp();
-    		break;
-    		case "prob":
-    		console.log("\nWhat % would you like to change it to?");
-    		console.log("(Please input the integer only)");
-    		expectInt = true;
-    		break;
-    		case "show":
-    		game.print();
-    		break;
-    		case "reset":
-    		game = new Table(user_x, user_y, game.per);
-    		moves = score = 0;
-    		console.log("\nYou've reset the game.\n")
-    		game.print();
-    		break;
-    		case "quit":
-    		done();
-    		break;
+        // Other commands
+        else{
+        	switch(text){
+        		case "HELP":
+        		halp();
+        		break;
+        		case "prob":
+        		console.log("\nWhat % would you like to change it to?");
+        		console.log("(Please input the integer only)");
+        		expectInt = true;
+        		break;
+        		case "show":
+        		game.print();
+        		break;
+        		case "reset":
+        		game = new Table(user_x, user_y, game.per);
+        		moves = score = 0;
+        		console.log("\nYou've reset the game.\n")
+        		game.print();
+        		break;
+        		case "quit":
+        		done();
+        		break;
 
-    		case "left":
-    		game.left();
-    		break;
-    		case "right":
-    		game.right();
-    		break;
-    		case "up":
-    		game.up();
-    		break;
-    		case "down":
-    		game.down();
-    		break;
+        		case "left":
+        		game.left();
+        		break;
+        		case "right":
+        		game.right();
+        		break;
+        		case "up":
+        		game.up();
+        		break;
+        		case "down":
+        		game.down();
+        		break;
 
-    		default:
-    		console.log("\nSorry, I don't recognize that command."
-    			+"\nIf you're confused, please type HELP "
-    			+"for instructions.\n");
-    	}
-	}
-}
+        		default:
+        		console.log("\nSorry, I don't recognize that command."
+        			+"\nIf you're confused, please type HELP "
+        			+"for instructions.\n");
+        	}
+        }
+    }
 
- function done() {
- 	console.log("\nThanks for playing THREES! Hope to see you again soon.");
- 	process.exit();
- }
+    function done() {
+    	console.log("\nThanks for playing THREES! Hope to see you again soon.");
+    	process.exit();
+    }
 
 
 /* THINGS TO FIX:
  1. Code has to work with MAC
  2. GAME OVER code
- 3. Recheck movements -- left, up, right, down 
+ 3. Recheck movements -- left, up, right, down
+ 4. Change the tabs to four spaces 
  */
 
  /* SOME DIFFICULTIES && THOUGHTS
@@ -462,8 +463,13 @@ function analyze(text){
      point, then shifting a mergeable block in the middle combine the values.
 
   5. Some small bug seems to happen when the game detects "GAME OVER". Even
-  	 when there are '0' blocks near the top, it still triggers the "GAME OVER"
-  	 subroutine. I believe it's linked to the up/down function, but I'll need
-  	 a little more time to figure it out.
+           when there are '0' blocks near the top, it still triggers the "GAME OVER"
+           subroutine. I believe it's linked to the up/down function, but I'll need
+           a little more time to figure it out.
+
+NOTES FROM OTHER PEOPLE
+  1. Consider making the square itself in charge of the movements-- left,
+     right, up, down. I guess the square itself can decide on whether it's
+     mergeable or not!
 
  */
