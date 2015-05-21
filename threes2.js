@@ -22,9 +22,7 @@ function Square(v){
     this.val = v;
 }
 
- Square.prototype
-
- /* TABLE */
+/* TABLE */
 
 /* TABLE Object
 * Defines Table object */
@@ -95,19 +93,169 @@ Table.prototype.print = function(){
         }
     }
 
-/* CHECK Function
- * Function checks if merging the squares is possible
- * Returns TRUE if possible, FALSE if not */
-function check(one, two){
-    if((one.val + two.val) == 3)
-        return true;
+/* MERGE function */
+function merge(one, two, oneIsEdge){
+    if(oneIsEdge && one.val == 0)
+        return rhs;
+    else if(one.val < 3 && two.val < 3 && (one.val+two.val) == 3)
+        return new Square(one.val+two.val);
     else if(one.val >= 3 && two.val >= 3 && one.val == two.val)
-        return true;
+        return new Square(one.val+two.val);
     else
-        return false;
+        return null;
 }
 
+/* Table.LEFT Function
+ * If leftmost square is 0, shifts everything left
+ * If leftmost two squares are mergeable, merges then shifts
+ * CURRENT VERSION: Shifts/merges can only be done near the wall */
+Table.prototype.left = function(){
+    moves++;
+    leftable = false;
 
+    // Checks if it's mergeable two squares at at a time
+    for(var i = 1; i < this.grid.length; i++){
+
+        var L = i-1;
+        var R = i;
+
+        if(L%this.col==0)       // edge
+            this.grid[L] = merge(this.grid[L], this.grid[R], true);
+        else                    // not edge
+            this.grid[L] = merge(this.grid[L], this.grid[R], false);
+
+        if(this.grid[L] == null)
+            console.log("ERROR: Left method");
+    }
+
+    console.log("\nYou moved LEFT:");
+    this.print();
+}
+
+/* Table.RIGHT Function
+ * If rightmost square is 0, shifts everything right
+ * If rightmost two squares are mergeable, merges then shifts
+ * CURRENT VERSION: Shifts/merges can only be done near the wall */
+ Table.prototype.right = function(){
+ 	moves++;
+ 	rightable = false;
+
+        // Checks the rightmost squares
+        for(var i = this.col-1; i < this.grid.length; i+=this.col){
+        var first = i - (this.col-1);        // Index of first in row
+        var last  = i;        // Index of last in row
+        var bool  = false;
+
+        // Check 1: Rightmost square is 0
+        if(this.grid[last].val == 0){
+
+        	this.hShift(first, last, bool);
+        	this.grid[first] = this.newSq();
+        }
+
+        // Check 2: Rightmost square is NOT 0 but ends are mergeable
+        else if(i != this.grid.length 
+        	&& check(this.grid[last], this.grid[last-1])){
+
+        	score += (this.grid[last].val += this.grid[last-1].val);
+        this.hShift(first, last-1, bool);
+        this.grid[first] = this.newSq();
+    }
+
+        // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift right
+        if((this.grid[last].val == 0) 
+        	|| (i != this.grid.length 
+        		&& check(this.grid[last], this.grid[last-1])))
+
+        	rightable = true;
+    }
+
+    console.log("\nYou moved RIGHT:");
+    this.print();
+}
+
+/* Table.UP Function
+ * If topmost square is 0, shifts everything up
+ * If topmost two squares are mergeable, merges then shifts
+ * CURRENT VERSION: Shifts/merges can only be done near the wall */
+ Table.prototype.up = function(){
+ 	moves++;
+ 	uppable = false;
+
+         // Checks the topmost squares
+         for(var i = 0; i < this.col; i++){
+         var first = i;        // Index of top in column
+        var last  = i+(this.col*(this.row-1));        // Index of last in column
+        var bool  = true;
+
+         // Check 1: Topmost square is 0
+         if(this.grid[first].val == 0){
+
+         	this.vShift(first, last, bool);
+         	this.grid[last] = this.newSq();
+         }
+
+         // Check 2: Topmost square is NOT 0 but tops are mergeable
+         if(check(this.grid[first], this.grid[first+this.col])){
+
+         	score += (this.grid[first].val += this.grid[first+this.col].val);
+         	this.vShift(first+this.col, last, bool);
+         	this.grid[last] = this.newSq();
+         }
+
+         // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift left
+        if((this.grid[first].val == 0)
+        	|| check(this.grid[first], this.grid[first+this.col]))
+
+        	uppable = true;
+    }
+
+    console.log("\nYou moved UP:");
+    this.print();
+}
+
+ /* Table.DOWN Function
+ * If bottommost square is 0, shifts everything down
+ * If bottommost two squares are mergeable, merges then shifts
+ * CURRENT VERSION: Shifts/merges can only be done near the wall */
+ Table.prototype.down = function(){
+ 	moves++;
+ 	downable = false;
+
+         // Checks the topmost squares
+         for(var i = 0; i < this.col; i++){
+         var first = i;        // Index of top in column
+        var last  = i+(this.col*(this.row-1));        // Index of last in column
+        var bool  = false;
+
+         // Check 1: Bottommost square is 0
+         if(this.grid[last].val == 0){
+
+         	this.vShift(first, last, bool);
+         	this.grid[first] = this.newSq();
+         }
+
+         // Check 2: Bottommost square is NOT 0 but bottoms are mergeable
+         if(check(this.grid[last], this.grid[last-this.col])){
+
+         	score += (this.grid[last].val += this.grid[last-this.col].val);
+         	this.vShift(first, last-this.col, bool);
+         	this.grid[first] = this.newSq();
+         }
+
+         // Implements Check 1 and Check 2
+        // There exists, in any row, a way for the row to shift left
+        if((this.grid[last].val == 0) 
+        	|| check(this.grid[last], this.grid[last-this.col]))        
+
+        	downable = true;        
+    }
+
+    console.log("\nYou moved DOWN:");
+    this.print();
+}
 
 /* STDIN */
 
